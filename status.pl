@@ -19,7 +19,6 @@ sub disk_space {
     my $disk_usage = Sys::Statistics::Linux::DiskUsage->new(
         cmd => {
             # This is the default
-            path => '/bin',
             df   => 'df -hP 2>/dev/null',
         }
     );
