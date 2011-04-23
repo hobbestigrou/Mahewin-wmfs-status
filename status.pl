@@ -10,7 +10,7 @@ sub free {
         memstats  => 1,
     );
     my $stat = $lxs->get;
-    my $free = 'Mem: ' . int($stat->memstats->{memfree} / 1024) . ' ' . int($stat->memstats->{memused} / 1024);
+    my $free = 'Mem: ' . int($stat->memstats->{memfree} / 1024) . '/' . int($stat->memstats->{memused} / 1024);
 
     return $free;
 }
@@ -23,7 +23,7 @@ sub disk_space {
         }
     );
     my $stat = $disk_usage->get;
-    my $disk = 'Disk: ' . $stat->{'/dev/sda6'}->{usage} . ' ' . $stat->{'/dev/sda6'}->{free};
+    my $disk = 'Disk: ' . $stat->{'/dev/sda6'}->{usage} . '/' . $stat->{'/dev/sda6'}->{free};
 
     return $disk;
 
