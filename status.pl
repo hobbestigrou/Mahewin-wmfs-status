@@ -23,17 +23,21 @@ sub free {
         memstats  => 1,
     );
 
-    my $stat = $lxs->get;
+    my $stat     = $lxs->get;
+    my $memfree  = $stat->memstats->{memfree};
+    my $memused  = $stat->memstats->{memused};
+    my $memtotal = $stat->memstats->{memtotal};
+
     my $home = _my_home();
     my $cfg  = Config::IniFiles->new(
         -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
     );
 
     my $format = $cfg->val('memory', 'format') || 'string';
-    my $free   = 'Mem: ' . int($stat->memstats->{memfree} / 1024) . '/' . int($stat->memstats->{memused} / 1024);
+    my $free   = 'Mem: ' . int($memfree / 1024) . '/' . int($memused / 1024);
 
     if ( $format eq 'percent' ) {
-        my $free_usage = sprintf("%0.2f", int($stat->memstats->{memused} / 1024) / int($stat->memstats->{memtotal} / 1024 ) * 100);
+        my $free_usage = sprintf("%0.2f", int($memused / 1024) / int($memtotal / 1024 ) * 100);
         $free = 'Mem: ' . $free_usage . '%';
     }
 
