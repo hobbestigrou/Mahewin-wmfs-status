@@ -5,6 +5,18 @@ use warnings;
 use Sys::Statistics::Linux;
 use Sys::Statistics::Linux::DiskUsage;
 
+sub _my_home {
+    if ( exists $ENV{HOME} && defined $ENV{HOME} ) {
+        return $ENV{HOME};
+    }
+
+    if ( $ENV{LOGDIR} ) {
+        return $ENV{LOGDIR};
+    }
+
+    return undef;
+}
+
 sub free {
     my $lxs = Sys::Statistics::Linux->new(
         memstats  => 1,
