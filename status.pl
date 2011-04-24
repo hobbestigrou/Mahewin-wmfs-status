@@ -83,8 +83,17 @@ sub time_date {
     return $date_time;
 }
 
-my $free      = free();
-my $disk      = disk_space();
-my $time_date = time_date();
+sub status {
+    my $home = _my_home();
+    my $cfg  = Config::IniFiles->new(
+        -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
+    );
 
-`wmfs -s "$free $disk $time_date"`;
+    my $free      = free()       if $cfg->val('memory', 'display');
+    my $disk      = disk_space() if $cfg->val('disk', 'display');
+    my $time_date = time_date()  if $cfg->val('date', 'display');
+
+    `wmfs -s "$free $disk $time_date"`;
+}
+
+status();
