@@ -54,12 +54,13 @@ sub disk_space {
         -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
     );
 
-    my $format = $cfg->val('disk', 'format') || 'string';
-    my $disk   = 'Disk: ' . $stat->{'/dev/sda6'}->{usage} . '/' . $stat->{'/dev/sda6'}->{free};
+    my $format    = $cfg->val('disk', 'format') || 'string';
+    my $disk_path = $cfg->val('disk', 'disk_path') || '/dev/sda1';
+    my $disk      = 'Disk: ' . $stat->{$disk_path}->{usage} . '/' . $stat->{$disk_path}->{free};
 
     if ( $format eq 'percent' ) {
-        my @usage = split(/G/, $stat->{'/dev/sda6'}->{usage});
-        my @total = split(/G/, $stat->{'/dev/sda6'}->{total});
+        my @usage = split(/G/, $stat->{$disk_path}->{usage});
+        my @total = split(/G/, $stat->{$disk_path}->{total});
         $usage[0] =~ s/,/./;
 
         my $disk_usage = sprintf("%0.2f", $usage[0] / $total[0] * 100);
