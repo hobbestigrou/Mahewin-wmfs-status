@@ -1,4 +1,7 @@
 Revision history for mahewin-status-bar
 
+0.2 24/04/2011
+    Uses a configuration file. Opportunities to indicate the display format, things to see and the road to partition disk.
+
 0.1 23/04/2011
     Initial version developed. Display memory info, disk info, and date.
