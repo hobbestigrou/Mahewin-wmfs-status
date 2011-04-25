@@ -1,0 +1,12 @@
+[date]
+display = 1 #Default value is false (0)
+format  = %Y/%m/%d %H:%M:%S #The default format is %Y/%m/%d %H:%M:%S
+
+[memory]
+display = 1 #Default value is false (0)
+format  = percent #Default display is string
+
+[disk]
+display   = 1 #Default value is false (0)
+disk_path = /dev/sda6 #Default path is /dev/sda1
+format    = percent #Default display is string
