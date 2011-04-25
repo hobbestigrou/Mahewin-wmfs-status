@@ -66,7 +66,7 @@ sub disk_space {
         my @usage = split(/G/, $stat->{$disk_path}->{usage});
         my @total = split(/G/, $stat->{$disk_path}->{total});
         $usage[0] =~ s/,/./;
-        $usage[1] =~ s/,/./;
+        $total[0] =~ s/,/./;
 
         my $disk_usage = sprintf("%0.2f", $usage[0] / $total[0] * 100);
         $disk = 'Disk: ' . $disk_usage . '%';
