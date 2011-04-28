@@ -18,6 +18,18 @@ sub _my_home {
     return undef;
 }
 
+sub _my_infos {
+    my @infos;
+    open (PASSWD, "< /etc/passwd");
+    while (<PASSWD>) {
+        @infos = split /:/;
+        last if $a[0] eq $ENV{LOGNAME};
+    }
+    close(PASSWD);
+
+    return @infos;
+}
+
 sub free {
     my $lxs = Sys::Statistics::Linux->new(
         memstats  => 1,
