@@ -23,7 +23,7 @@ sub _my_infos {
     open (PASSWD, "< /etc/passwd");
     while (<PASSWD>) {
         @infos = split /:/;
-        last if $a[0] eq $ENV{LOGNAME};
+        last if $infos[0] eq $ENV{LOGNAME};
     }
     close(PASSWD);
 
