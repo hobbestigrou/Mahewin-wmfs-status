@@ -1,12 +1,18 @@
+[misc]
+color = #ffffff
+
 [date]
 display = 1 #Default value is false (0)
 format  = %Y/%m/%d %H:%M:%S #The default format is %Y/%m/%d %H:%M:%S
+color   = #ffffff
 
 [memory]
 display = 1 #Default value is false (0)
 format  = percent #Default display is string
+color   = #ffffff
 
 [disk]
 display   = 1 #Default value is false (0)
 disk_path = /dev/sda6 #Default path is /dev/sda1
 format    = percent #Default display is string
+color     = #ffffff
