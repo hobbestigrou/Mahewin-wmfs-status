@@ -46,11 +46,15 @@ sub free {
     );
 
     my $format = $cfg->val('memory', 'format') || 'string';
-    my $free   = 'Mem: ' . int($memfree / 1024) . '/' . int($memused / 1024);
+    my $color  = $cfg->val('memory', 'color')
+        ? "\\" . $cfg->val('memory', 'color') . "\\"
+        : '\\' . $cfg->val('misc', 'color') . '\\';
+
+    my $free   = $color . 'Mem: ' . int($memfree / 1024) . '/' . int($memused / 1024);
 
     if ( $format eq 'percent' ) {
         my $free_usage = sprintf("%0.2f", int($memused / 1024) / int($memtotal / 1024 ) * 100);
-        $free = 'Mem: ' . $free_usage . '%';
+        $free = $color . 'Mem: ' . $free_usage . '%';
     }
 
     return $free;
@@ -72,7 +76,10 @@ sub disk_space {
 
     my $format    = $cfg->val('disk', 'format') || 'string';
     my $disk_path = $cfg->val('disk', 'disk_path') || '/dev/sda1';
-    my $disk      = 'Disk: ' . $stat->{$disk_path}->{usage} . '/' . $stat->{$disk_path}->{free};
+    my $color     = $cfg->val('disk', 'color')
+        ? "\\" . $cfg->val('disk', 'color') . "\\"
+        : '\\' . $cfg->val('misc', 'color') . '\\';
+    my $disk      = $color . 'Disk: ' . $stat->{$disk_path}->{usage} . '/' . $stat->{$disk_path}->{free};
 
     if ( $format eq 'percent' ) {
         my @usage = split(/G/, $stat->{$disk_path}->{usage});
@@ -81,7 +88,7 @@ sub disk_space {
         $total[0] =~ s/,/./;
 
         my $disk_usage = sprintf("%0.2f", $usage[0] / $total[0] * 100);
-        $disk = 'Disk: ' . $disk_usage . '%';
+        $disk = $color . 'Disk: ' . $disk_usage . '%';
     }
 
     return $disk;
@@ -94,9 +101,12 @@ sub time_date {
         -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
     );
     my $format = $cfg->val('date', 'format') || '%Y/%m/%d %H:%M:%S';
+    my $color  = $cfg->val('date', 'color')
+        ? "\\" . $cfg->val('date', 'color') . "\\"
+        : '\\' . $cfg->val('misc', 'color') . '\\';
 
     $lxs->settime($format);
-    my $date_time = 'Date: ' . $lxs->gettime;
+    my $date_time = $color . 'Date: ' . $lxs->gettime;
 
     return $date_time;
 }
