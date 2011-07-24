@@ -113,9 +113,16 @@ sub time_date {
 
 sub name {
     my @infos = _my_infos();
+    my $home  = _my_home();
     my @name  = split(/,/, $infos[4]);
+    my $cfg   = Config::IniFiles->new(
+        -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
+    );
+    my $color = $cfg->val('name', 'color')
+        ? "\\" . $cfg->val('name', 'color') . "\\"
+        : '\\' . $cfg->val('misc', 'color') . '\\';
 
-    return $name[0];
+    return $color . $name[0];
 }
 
 sub status {
