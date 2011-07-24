@@ -111,6 +111,13 @@ sub time_date {
     return $date_time;
 }
 
+sub name {
+    my @infos = _my_infos();
+    my @name  = split(/,/, $infos[4]);
+
+    return $name[0];
+}
+
 sub status {
     my $home = _my_home();
     my $cfg  = Config::IniFiles->new(
@@ -120,8 +127,9 @@ sub status {
     my $free      = free()       if $cfg->val('memory', 'display');
     my $disk      = disk_space() if $cfg->val('disk', 'display');
     my $time_date = time_date()  if $cfg->val('date', 'display');
+    my $name      = name()       if $cfg->val('date', 'display');
 
-    `wmfs -s "$free $disk $time_date"`;
+    `wmfs -s "$free $disk $time_date $name"`;
 }
 
 status();
