@@ -124,12 +124,24 @@ sub status {
         -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
     );
 
-    my $free      = free()       if $cfg->val('memory', 'display');
-    my $disk      = disk_space() if $cfg->val('disk', 'display');
-    my $time_date = time_date()  if $cfg->val('date', 'display');
-    my $name      = name()       if $cfg->val('date', 'display');
+    my @call;
 
-    `wmfs -s "$free $disk $time_date $name"`;
+    my @sections = $cfg->Sections();
+    my $dispatch = {
+        memory => free(),
+        disk   => disk_space(),
+        date   => time_date(),
+        name   => name()
+    };
+
+    foreach my $section (@sections) {
+        next if $section eq 'misc';
+
+        $call[$cfg->val($section, 'position')] = $dispatch->{$section}
+            if $cfg->val($section, 'display');
+    }
+
+    `wmfs -s "@call"`;
 }
 
 status();
