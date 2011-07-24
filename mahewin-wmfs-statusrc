@@ -2,17 +2,25 @@
 color = #ffffff
 
 [date]
-display = 1 #Default value is false (0)
-format  = %Y/%m/%d %H:%M:%S #The default format is %Y/%m/%d %H:%M:%S
-color   = #ffffff
+display  = 1 #Default value is false (0)
+format   = %Y/%m/%d %H:%M:%S #The default format is %Y/%m/%d %H:%M:%S
+color    = #ffffff
+position = 3
 
 [memory]
-display = 1 #Default value is false (0)
-format  = percent #Default display is string
-color   = #ffffff
+display  = 1 #Default value is false (0)
+format   = percent #Default display is string
+color    = #ffffff
+position = 2
 
 [disk]
 display   = 1 #Default value is false (0)
 disk_path = /dev/sda6 #Default path is /dev/sda1
 format    = percent #Default display is string
 color     = #ffffff
+position  = 1
+
+[name]
+display   = 1
+color     = #ffffff
+position  = 0
