@@ -151,4 +151,14 @@ sub status {
     `wmfs -s "@call"`;
 }
 
-status();
+my $home = _my_home();
+my $cfg  = Config::IniFiles->new(
+    -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
+);
+
+my $timing = $cfg->val('misc', 'timing') || 1;
+
+while ( 1 ) {
+    sleep( $timing );
+    status();
+}
