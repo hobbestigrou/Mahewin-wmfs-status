@@ -1,5 +1,8 @@
 Revision history for mahewin-status-bar
 
+0.4 14/04/2012
+    * [Core] Status: Adapt the call to wmfs 2. (Hobbestigrou)
+
 0.3 19/07/2011
     Specified color for elements.
 
