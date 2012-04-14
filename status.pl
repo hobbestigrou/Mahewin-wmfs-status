@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -148,7 +148,7 @@ sub status {
             if $cfg->val($section, 'display');
     }
 
-    `wmfs -s "@call"`;
+    `wmfs -c status "default @call"`;
 }
 
 my $home = _my_home();
