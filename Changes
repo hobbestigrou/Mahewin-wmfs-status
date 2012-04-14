@@ -1,5 +1,9 @@
 Revision history for mahewin-status-bar
 
+0.5 14/04/2012
+    * [Core] Mahewin-wmfs-status: Generate a binary file with all dependecies. (Hobbestigrou)
+    * [Core] Status: Rename the file to mahewin-wmfs-status. (Hobbestigrou)
+
 0.4 14/04/2012
     * [Core] Status: Adapt the call to wmfs 2. (Hobbestigrou)
 
