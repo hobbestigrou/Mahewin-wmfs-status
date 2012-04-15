@@ -2,9 +2,9 @@ package MahewinWmfsStatus;
 
 use Moose;
 
+use Config::IniFiles;
 use Sys::Statistics::Linux;
 use Sys::Statistics::Linux::DiskUsage;
-use Config::IniFiles;
 
 has _file_path => (
     is      => 'ro',
@@ -70,6 +70,41 @@ sub _build_config {
 
 sub _build_lxs {
     Sys::Statistics::Linux->new( memstats => 1, );
+}
+
+sub run {
+    my ($self) = @_;
+
+    my $timing = $self->_config->val( 'misc', 'timing' ) || 1;
+
+    while (1) {
+        sleep($timing);
+        $self->status();
+    }
+}
+
+sub status {
+    my ($self) = @_;
+
+    my $cfg = $self->_config;
+    my @call;
+
+    my @sections = $self->_config->Sections();
+    my $dispatch = {
+        memory => $self->free(),
+        disk   => $self->disk_space(),
+        date   => $self->time_date(),
+        name   => $self->name()
+    };
+
+    foreach my $section (@sections) {
+        next if $section eq 'misc';
+
+        $call[ $cfg->val( $section, 'position' ) ] = $dispatch->{$section}
+          if $cfg->val( $section, 'display' );
+    }
+
+    `wmfs -c status "default @call"`;
 }
 
 sub free {
@@ -148,30 +183,6 @@ sub name {
     return $self->_stringify( 'name', $name[0] );
 }
 
-sub status {
-    my ($self) = @_;
-
-    my $cfg = $self->_config;
-    my @call;
-
-    my @sections = $self->_config->Sections();
-    my $dispatch = {
-        memory => $self->free(),
-        disk   => $self->disk_space(),
-        date   => $self->time_date(),
-        name   => $self->name()
-    };
-
-    foreach my $section (@sections) {
-        next if $section eq 'misc';
-
-        $call[ $cfg->val( $section, 'position' ) ] = $dispatch->{$section}
-          if $cfg->val( $section, 'display' );
-    }
-
-    `wmfs -c status "default @call"`;
-}
-
 sub _stringify {
     my ( $self, $type, $string ) = @_;
 
@@ -183,17 +194,6 @@ sub _stringify {
       : $cfg->val( 'misc', 'color' );
 
     return "^s[right;$color;$string ]";
-}
-
-sub run {
-    my ($self) = @_;
-
-    my $timing = $self->_config->val( 'misc', 'timing' ) || 1;
-
-    while (1) {
-        sleep($timing);
-        $self->status();
-    }
 }
 
 1;
