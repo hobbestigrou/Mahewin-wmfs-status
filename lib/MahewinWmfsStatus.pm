@@ -64,14 +64,12 @@ sub _build_config {
 
     my $home = $self->_file_path;
 
-    my $cfg = Config::IniFiles->new(
+    Config::IniFiles->new(
         -file => "$home/.config/wmfs/mahewin-wmfs-statusrc" );
-
-    $cfg;
 }
 
 sub _build_lxs {
-    return Sys::Statistics::Linux->new( memstats => 1, );
+    Sys::Statistics::Linux->new( memstats => 1, );
 }
 
 sub free {
@@ -84,17 +82,16 @@ sub free {
 
     my $format = $self->_config->val( 'memory', 'format' ) || 'string';
 
-    my $free =
-      $self->_stringify( 'memory',
+    return $format eq 'percent'
+      ? $self->_stringify(
+        'memory',
+        'Mem: '
+          . sprintf( "%0.2f",
+            int( $memused / 1024 ) / int( $memtotal / 1024 ) * 100 )
+          . '%'
+      )
+      : $self->_stringify( 'memory',
         'Mem: ' . int( $memfree / 1024 ) . '/' . int( $memused / 1024 ) );
-
-    if ( $format eq 'percent' ) {
-        my $free_usage = sprintf( "%0.2f",
-            int( $memused / 1024 ) / int( $memtotal / 1024 ) * 100 );
-        $free = $self->_stringify( 'memory', 'Mem: ' . $free_usage . '%' );
-    }
-
-    return $free;
 }
 
 sub disk_space {
@@ -185,9 +182,7 @@ sub _stringify {
       ? $cfg->val( $type,  'color' )
       : $cfg->val( 'misc', 'color' );
 
-    my $final = "^s[right;$color;$string]";
-
-    return $final;
+    return "^s[right;$color;$string]";
 }
 
 sub run {
