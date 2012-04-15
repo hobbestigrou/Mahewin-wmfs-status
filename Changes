@@ -1,17 +1,22 @@
-Revision history for mahewin-status-bar
-
+Revision history for mahewin-status-bar 
+ 
+0.6 15/04/2012 
+    * [Core] Mahewin-wmfs-status: Use the new classes, and bugfixes for the color string. (Hobbestigrou)
+    * [Core] MahewinWmfsStatus: Add a class to have a better code, more clean and more optimize. (Hobbestigrou)
+    * [Core] Mahewin-wmfs-status: Fix shebang line. (Hobbestigrou)
+    
 0.5 14/04/2012
     * [Core] Mahewin-wmfs-status: Generate a binary file with all dependecies. (Hobbestigrou)
     * [Core] Status: Rename the file to mahewin-wmfs-status. (Hobbestigrou)
-
+    
 0.4 14/04/2012
     * [Core] Status: Adapt the call to wmfs 2. (Hobbestigrou)
-
+    
 0.3 19/07/2011
     Specified color for elements.
-
+    
 0.2 24/04/2011
     Uses a configuration file. Opportunities to indicate the display format, things to see and the road to partition disk.
-
+    
 0.1 23/04/2011
     Initial version developed. Display memory info, disk info, and date.
