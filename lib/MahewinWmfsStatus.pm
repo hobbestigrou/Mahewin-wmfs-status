@@ -182,7 +182,7 @@ sub _stringify {
       ? $cfg->val( $type,  'color' )
       : $cfg->val( 'misc', 'color' );
 
-    return "^s[right;$color;$string]";
+    return "^s[right;$color;$string ]";
 }
 
 sub run {
