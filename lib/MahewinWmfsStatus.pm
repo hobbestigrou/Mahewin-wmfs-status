@@ -2,9 +2,9 @@ package MahewinWmfsStatus;
 
 use Moose;
 
+use Config::IniFiles;
 use Sys::Statistics::Linux;
 use Sys::Statistics::Linux::DiskUsage;
-use Config::IniFiles;
 
 has _file_path => (
     is      => 'ro',
@@ -49,7 +49,7 @@ sub _build_file_path {
 sub _build_user_infos {
     my @infos;
 
-    open (PASSWD, "< /etc/passwd");
+    open( PASSWD, "< /etc/passwd" );
     while (<PASSWD>) {
         @infos = split /:/;
         last if $infos[0] eq $ENV{LOGNAME};
@@ -60,94 +60,31 @@ sub _build_user_infos {
 }
 
 sub _build_config {
-    my ( $self ) = @_;
+    my ($self) = @_;
 
     my $home = $self->_file_path;
 
-    my $cfg  = Config::IniFiles->new(
-        -file => "$home/.config/wmfs/mahewin-wmfs-statusrc"
-    );
-
-    $cfg;
+    Config::IniFiles->new(
+        -file => "$home/.config/wmfs/mahewin-wmfs-statusrc" );
 }
 
 sub _build_lxs {
-    return Sys::Statistics::Linux->new(
-        memstats  => 1,
-    );
+    Sys::Statistics::Linux->new( memstats => 1, );
 }
 
-sub free {
-    my ( $self ) = @_;
+sub run {
+    my ($self) = @_;
 
-    my $stat     = $self->_lxs->get;
-    my $memfree  = $stat->memstats->{memfree};
-    my $memused  = $stat->memstats->{memused};
-    my $memtotal = $stat->memstats->{memtotal};
+    my $timing = $self->_config->val( 'misc', 'timing' ) || 1;
 
-    my $format = $self->_config->val('memory', 'format') || 'string';
-
-    my $free = $self->_stringify( 'memory', 'Mem: ' . int($memfree / 1024) . '/' . int($memused / 1024) );
-
-    if ( $format eq 'percent' ) {
-        my $free_usage = sprintf("%0.2f", int($memused / 1024) / int($memtotal / 1024 ) * 100);
-        $free = $self->_stringify( 'memory', 'Mem: ' . $free_usage . '%' );
+    while (1) {
+        sleep($timing);
+        $self->status();
     }
-
-    return $free;
-}
-
-sub disk_space {
-    my ( $self ) = @_;
-
-    my $disk_usage = Sys::Statistics::Linux::DiskUsage->new(
-        cmd => {
-            # This is the default
-            df   => 'df -hP 2>/dev/null',
-        }
-    );
-
-    my $stat = $disk_usage->get;
-
-    my $format    = $self->_config->val('disk', 'format') || 'string';
-    my $disk_path = $self->_config->val('disk', 'disk_path') || '/dev/sda1';
-
-    my $disk      = $self->_stringify( 'disk', 'Disk: ' . $stat->{$disk_path}->{usage} . '/' . $stat->{$disk_path}->{free} );
-
-    if ( $format eq 'percent' ) {
-        my @usage = split(/G/, $stat->{$disk_path}->{usage});
-        my @total = split(/G/, $stat->{$disk_path}->{total});
-        $usage[0] =~ s/,/./;
-        $total[0] =~ s/,/./;
-
-        my $disk_usage = sprintf("%0.2f", $usage[0] / $total[0] * 100);
-        $disk = $self->_stringify( 'disk', 'Disk: ' . $disk_usage . '%' );
-    }
-
-    return $disk;
-}
-
-sub time_date {
-    my ( $self ) = @_;
-
-    my $format = $self->_config->val('date', 'format') || '%Y/%m/%d %H:%M:%S';
-
-    $self->_lxs->settime($format);
-
-    return $self->_stringify( 'date', 'Date: ' . $self->_lxs->gettime );
-}
-
-sub name {
-    my ( $self ) = @_;
-
-    my $infos = $self->_user_infos;
-    my @name  = split(/,/, $infos->[4]);
-
-    return $self->_stringify( 'name', $name[0] );
 }
 
 sub status {
-    my ( $self ) = @_;
+    my ($self) = @_;
 
     my $cfg = $self->_config;
     my @call;
@@ -163,11 +100,87 @@ sub status {
     foreach my $section (@sections) {
         next if $section eq 'misc';
 
-        $call[$cfg->val($section, 'position')] = $dispatch->{$section}
-            if $cfg->val($section, 'display');
+        $call[ $cfg->val( $section, 'position' ) ] = $dispatch->{$section}
+          if $cfg->val( $section, 'display' );
     }
 
     `wmfs -c status "default @call"`;
+}
+
+sub free {
+    my ($self) = @_;
+
+    my $stat     = $self->_lxs->get;
+    my $memfree  = $stat->memstats->{memfree};
+    my $memused  = $stat->memstats->{memused};
+    my $memtotal = $stat->memstats->{memtotal};
+
+    my $format = $self->_config->val( 'memory', 'format' ) || 'string';
+
+    return $format eq 'percent'
+      ? $self->_stringify(
+        'memory',
+        'Mem: '
+          . sprintf( "%0.2f",
+            int( $memused / 1024 ) / int( $memtotal / 1024 ) * 100 )
+          . '%'
+      )
+      : $self->_stringify( 'memory',
+        'Mem: ' . int( $memfree / 1024 ) . '/' . int( $memused / 1024 ) );
+}
+
+sub disk_space {
+    my ($self) = @_;
+
+    my $disk_usage = Sys::Statistics::Linux::DiskUsage->new(
+        cmd => {
+
+            # This is the default
+            df => 'df -hP 2>/dev/null',
+        }
+    );
+
+    my $stat = $disk_usage->get;
+
+    my $format    = $self->_config->val( 'disk', 'format' )    || 'string';
+    my $disk_path = $self->_config->val( 'disk', 'disk_path' ) || '/dev/sda1';
+
+    my $disk = $self->_stringify( 'disk',
+            'Disk: '
+          . $stat->{$disk_path}->{usage} . '/'
+          . $stat->{$disk_path}->{free} );
+
+    if ( $format eq 'percent' ) {
+        my @usage = split( /G/, $stat->{$disk_path}->{usage} );
+        my @total = split( /G/, $stat->{$disk_path}->{total} );
+        $usage[0] =~ s/,/./;
+        $total[0] =~ s/,/./;
+
+        my $disk_usage = sprintf( "%0.2f", $usage[0] / $total[0] * 100 );
+        $disk = $self->_stringify( 'disk', 'Disk: ' . $disk_usage . '%' );
+    }
+
+    return $disk;
+}
+
+sub time_date {
+    my ($self) = @_;
+
+    my $format = $self->_config->val( 'date', 'format' )
+      || '%Y/%m/%d %H:%M:%S';
+
+    $self->_lxs->settime($format);
+
+    return $self->_stringify( 'date', 'Date: ' . $self->_lxs->gettime );
+}
+
+sub name {
+    my ($self) = @_;
+
+    my $infos = $self->_user_infos;
+    my @name = split( /,/, $infos->[4] );
+
+    return $self->_stringify( 'name', $name[0] );
 }
 
 sub _stringify {
@@ -175,24 +188,12 @@ sub _stringify {
 
     my $cfg = $self->_config;
 
-    my $color  = $cfg->val( $type, 'color')
-        ? $cfg->val( $type, 'color')
-        : $cfg->val('misc', 'color');
+    my $color =
+        $cfg->val( $type,  'color' )
+      ? $cfg->val( $type,  'color' )
+      : $cfg->val( 'misc', 'color' );
 
-    my $final = "^s[right;$color;$string]";
-
-    return $final;
-}
-
-sub run {
-    my ( $self ) = @_;
-
-    my $timing = $self->_config->val('misc', 'timing') || 1;
-
-    while ( 1 ) {
-        sleep( $timing );
-        $self->status();
-    }
+    return "^s[right;$color;$string ]";
 }
 
 1;
