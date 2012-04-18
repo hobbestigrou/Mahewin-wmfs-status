@@ -120,13 +120,12 @@ sub free {
     return $format eq 'percent'
       ? $self->_stringify(
         'memory',
-        'Mem: '
-          . sprintf( "%0.2f",
+        sprintf( "%0.2f",
             int( $memused / 1024 ) / int( $memtotal / 1024 ) * 100 )
           . '%'
       )
       : $self->_stringify( 'memory',
-        'Mem: ' . int( $memfree / 1024 ) . '/' . int( $memused / 1024 ) );
+        int( $memfree / 1024 ) . '/' . int( $memused / 1024 ) );
 }
 
 sub disk_space {
@@ -157,7 +156,7 @@ sub disk_space {
         $total[0] =~ s/,/./;
 
         my $disk_usage = sprintf( "%0.2f", $usage[0] / $total[0] * 100 );
-        $disk = $self->_stringify( 'disk', 'Disk: ' . $disk_usage . '%' );
+        $disk = $self->_stringify( 'disk', $disk_usage . '%' );
     }
 
     return $disk;
@@ -171,7 +170,7 @@ sub time_date {
 
     $self->_lxs->settime($format);
 
-    return $self->_stringify( 'date', 'Date: ' . $self->_lxs->gettime );
+    return $self->_stringify( 'date', $self->_lxs->gettime );
 }
 
 sub name {
@@ -192,8 +191,9 @@ sub _stringify {
         $cfg->val( $type,  'color' )
       ? $cfg->val( $type,  'color' )
       : $cfg->val( 'misc', 'color' );
+    my $label = ( $cfg->val( $type, 'label' ) // ucfirst($type) ) . ':';
 
-    return "^s[right;$color;$string ]";
+    return "^s[right;$color; $label $string ]";
 }
 
 1;
