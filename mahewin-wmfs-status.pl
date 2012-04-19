@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use MahewinWmfsStatus;
+use App::MahewinWmfsStatus;
 
-my $wmfs_status = MahewinWmfsStatus->new;
+my $wmfs_status = App::MahewinWmfsStatus->new;
 $wmfs_status->run;

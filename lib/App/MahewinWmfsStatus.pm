@@ -1,10 +1,12 @@
-package MahewinWmfsStatus;
+package App::MahewinWmfsStatus;
 
 use Moose;
 
 use Config::IniFiles;
 use Sys::Statistics::Linux;
 use Sys::Statistics::Linux::DiskUsage;
+
+#ABSTRACT: To display information in a wmfs status bar
 
 has _file_path => (
     is      => 'ro',
@@ -78,6 +80,7 @@ sub run {
     my $timing = $self->_config->val( 'misc', 'timing' ) || 1;
 
     while (1) {
+        print 'Salut', "\n";
         sleep($timing);
         $self->status();
     }
