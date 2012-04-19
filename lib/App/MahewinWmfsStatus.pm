@@ -80,7 +80,6 @@ sub run {
     my $timing = $self->_config->val( 'misc', 'timing' ) || 1;
 
     while (1) {
-        print 'Salut', "\n";
         sleep($timing);
         $self->status();
     }
