@@ -172,7 +172,8 @@ sub time_date {
 
     $self->_lxs->settime($format);
 
-    return $self->_stringify( 'date', $self->_lxs->gettime );
+    my $date = $self->_lxs->gettime;
+    return $self->_stringify( 'date', $date );
 }
 
 sub name {
