@@ -67,7 +67,7 @@ sub _build_config {
     my $home = $self->_home_user;
 
     Config::IniFiles->new(
-        -file => "$home/.config/wmfs/mahewin-wmfs-statusrc" );
+        -file => "$home/.config/wmfs/mahewin-wmfs-status.ini" );
 }
 
 sub _build_lxs {
