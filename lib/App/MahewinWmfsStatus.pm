@@ -12,7 +12,7 @@ has _home_user => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    builder => '_build_file_path'
+    builder => '_build_home_user'
 );
 
 has _user_infos => (
@@ -36,7 +36,7 @@ has _lxs => (
     builder => '_build_lxs',
 );
 
-sub _build_file_path {
+sub _build_home_user {
     if ( exists $ENV{HOME} && defined $ENV{HOME} ) {
         return $ENV{HOME};
     }
