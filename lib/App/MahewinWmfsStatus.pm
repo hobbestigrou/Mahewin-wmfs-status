@@ -8,7 +8,7 @@ use Sys::Statistics::Linux::DiskUsage;
 
 #ABSTRACT: To display information in a wmfs status bar
 
-has _file_path => (
+has _home_user => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
@@ -64,7 +64,7 @@ sub _build_user_infos {
 sub _build_config {
     my ($self) = @_;
 
-    my $home = $self->_file_path;
+    my $home = $self->_home_user;
 
     Config::IniFiles->new(
         -file => "$home/.config/wmfs/mahewin-wmfs-statusrc" );
