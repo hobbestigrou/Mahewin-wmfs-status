@@ -2,9 +2,12 @@ package App::MahewinWmfsStatus;
 
 use Moose;
 
+use Carp;
+
 use Config::IniFiles;
 use Sys::Statistics::Linux;
 use Sys::Statistics::Linux::DiskUsage;
+use Try::Tiny;
 
 #ABSTRACT: To display information in a wmfs status bar
 
@@ -66,8 +69,11 @@ sub _build_config {
 
     my $home = $self->_home_user;
 
-    Config::IniFiles->new(
-        -file => "$home/.config/wmfs/mahewin-wmfs-status.ini" );
+    try {
+        Config::IniFiles->new(
+            -file => "$home/.config/wmfs/mahewin-wmfs-status.ini"
+        );
+    } or croak "Don't find configuration file mahewin-wmfs-status.ini in .config/wmfs";
 }
 
 sub _build_lxs {
