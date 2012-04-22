@@ -39,6 +39,13 @@ has _lxs => (
     builder => '_build_lxs',
 );
 
+has _disk_usage => (
+    is      => 'ro',
+    isa     => 'Sys::Statistics::Linux::DiskUsage',
+    lazy    => 1,
+    builder => '_build_disk_usage',
+);
+
 sub _build_home_user {
     if ( exists $ENV{HOME} && defined $ENV{HOME} ) {
         return $ENV{HOME};
@@ -78,6 +85,16 @@ sub _build_config {
 
 sub _build_lxs {
     Sys::Statistics::Linux->new( memstats => 1, );
+}
+
+sub _build_disk_usage {
+    Sys::Statistics::Linux::DiskUsage->new(
+        cmd => {
+
+            # This is the default
+            df => 'df -hP 2>/dev/null',
+        }
+    );
 }
 
 sub run {
@@ -139,15 +156,7 @@ sub free {
 sub disk_space {
     my ($self) = @_;
 
-    my $disk_usage = Sys::Statistics::Linux::DiskUsage->new(
-        cmd => {
-
-            # This is the default
-            df => 'df -hP 2>/dev/null',
-        }
-    );
-
-    my $stat = $disk_usage->get;
+    my $stat = $self->_disk_usage->get;
 
     my $format    = $self->_config->val( 'disk', 'format' )    || 'string';
     my $disk_path = $self->_config->val( 'disk', 'disk_path' ) || '/dev/sda1';
